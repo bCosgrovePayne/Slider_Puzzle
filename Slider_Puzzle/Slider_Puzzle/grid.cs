@@ -15,7 +15,6 @@ namespace Slider_Puzzle
         public grid()
         {
             _gridItems = new Dictionary<GridPosition, GridItem>();
-            const double squareSize = 75;
             _absoluteLayout = new AbsoluteLayout
             {
                 BackgroundColor = Color.FromRgb(0, 0, 255),
@@ -39,6 +38,10 @@ namespace Slider_Puzzle
                         source = counter.ToString() + ".jpeg";
                     }
                     GridItem item = new GridItem(new GridPosition(row, col), source);
+
+                    var tapRecognizer = new TapGestureRecognizer();
+                    tapRecognizer.Tapped += OnLabelTapped;
+                    item.GestureRecognizers.Add(tapRecognizer);
 
                     _gridItems.Add(item.Position, item);
                     _absoluteLayout.Children.Add(item);
