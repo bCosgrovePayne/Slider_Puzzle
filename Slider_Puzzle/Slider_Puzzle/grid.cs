@@ -41,6 +41,8 @@ namespace Slider_Puzzle
                     _absoluteLayout.Children.Add(item, rect);
                 }
             }
+            //scramble the pieces
+                          
             ContentView contentView = new ContentView
             {
                 Content = _absoluteLayout
@@ -48,6 +50,19 @@ namespace Slider_Puzzle
             contentView.SizeChanged += OnContentViewSizeChanged;
             this.Padding = new Thickness(5, Device.OnPlatform(25, 5, 5), 5, 5);
             this.Content = contentView;
+
+            
+            for (int i = 0; i < 100000; i++)
+            {
+                for (int j = 0; j < 4; j++)
+                {
+                    for (int k = 0; k < 4; k++)
+                    {
+                        GridPosition squareSelect = new GridPosition(j, k);
+                        Scrambler(_gridItems[squareSelect]); 
+                    }
+                }
+            }
         }
         void OnContentViewSizeChanged(object sender, EventArgs args)
         {
@@ -66,7 +81,11 @@ namespace Slider_Puzzle
         }
         void OnLabelTapped(object sender, EventArgs args)
         {
-            GridItem item = (GridItem)sender;
+            Scrambler((GridItem)sender);            
+        }
+
+        void Scrambler(GridItem item)
+        {
             Random rand = new Random();
             int move;
             int row;
