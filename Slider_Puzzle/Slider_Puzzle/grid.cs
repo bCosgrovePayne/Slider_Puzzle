@@ -11,7 +11,7 @@ namespace Slider_Puzzle
     public class grid : ContentPage
     {
         private Dictionary<GridPosition, GridItem> _gridItems;
-        private Dictionary<GridPosition, GridItem> _solved;
+        private string solved;
         private AbsoluteLayout _absoluteLayout;
         public grid()
         {
@@ -42,7 +42,7 @@ namespace Slider_Puzzle
                     _absoluteLayout.Children.Add(item, rect);
                 }
             }
-            _solved = _gridItems;
+            solved = _gridItems.ToString();
                           
             ContentView contentView = new ContentView
             {
@@ -53,7 +53,7 @@ namespace Slider_Puzzle
             this.Content = contentView;
 
             GridPosition emptySquare = new GridPosition(3, 3);
-            for (int i = 0; i < 1000000; i++)
+            for (int i = 0; i < 100000; i++)
             {
                 // 0, 1, 2, 3 = up right down left
                 //adjust for corners and edges
@@ -223,6 +223,20 @@ namespace Slider_Puzzle
 
             _gridItems[item1.Position] = item1;
             _gridItems[item2.Position] = item2;
+
+            //if (solved == _gridItems.ToString())
+            //{
+            //    winner item = new winner(new GridPosition(3, 3));
+            //    Rectangle rect = new Rectangle(300, 300, 75, 75);
+            //    _absoluteLayout.Children.Add(item, rect);
+            //    ContentView contentView = new ContentView
+            //    {
+            //        Content = _absoluteLayout
+            //    };
+            //    contentView.SizeChanged += OnContentViewSizeChanged;
+            //    this.Padding = new Thickness(5, Device.OnPlatform(25, 5, 5), 5, 5);
+            //    this.Content = contentView;
+            //}
         }
         class GridPosition
         {
@@ -269,6 +283,20 @@ namespace Slider_Puzzle
                 Position = position;
                 Source = text;
                 Text = text;
+            }
+        }
+
+        class winner : Label
+        {
+            public GridPosition Position
+            {
+                get; set;
+            }
+            public winner(GridPosition position)
+            {
+                Position = position;
+                Text = "Winner";
+                TextColor = Color.White;
             }
         }
     }    
