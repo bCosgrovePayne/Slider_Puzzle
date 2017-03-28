@@ -14,6 +14,7 @@ namespace Slider_Puzzle
         private AbsoluteLayout _absoluteLayout;
         public grid()
         {
+            int squareSize = 75;
             _gridItems = new Dictionary<GridPosition, GridItem>();
             _absoluteLayout = new AbsoluteLayout
             {
@@ -21,22 +22,14 @@ namespace Slider_Puzzle
                 HorizontalOptions = LayoutOptions.Center,
                 VerticalOptions = LayoutOptions.Center
             };
-            int counter = 0;
+            int counter = 1;
             string source = "";
             for (int row = 0; row < 4; row++)
             {
                 for (int col = 0; col < 4; col++)
                 {
                     counter++;
-                    
-                    if (counter == 1)
-                    {
-                        source = "";
-                    }
-                    else
-                    {
-                        source = counter.ToString() + ".jpeg";
-                    }
+                    source = counter.ToString() + ".jpeg";
                     GridItem item = new GridItem(new GridPosition(row, col), source);
 
                     var tapRecognizer = new TapGestureRecognizer();
@@ -44,7 +37,8 @@ namespace Slider_Puzzle
                     item.GestureRecognizers.Add(tapRecognizer);
 
                     _gridItems.Add(item.Position, item);
-                    _absoluteLayout.Children.Add(item);
+                    Rectangle rect = new Rectangle(col * squareSize, row * squareSize, squareSize, squareSize);
+                    _absoluteLayout.Children.Add(item, rect);
                 }
             }
             ContentView contentView = new ContentView
@@ -204,7 +198,7 @@ namespace Slider_Puzzle
                 return 17 * 23 + this.Row.GetHashCode() * 23 + this.Column.GetHashCode();
             }
         }
-        class GridItem : Label
+        class GridItem : Image
         {
             public GridPosition Position
             {
@@ -213,7 +207,7 @@ namespace Slider_Puzzle
             public GridItem(GridPosition position, String text)
             {
                 Position = position;
-                Image image = new Image { Source = text };
+                Source = text;
             }
         }
     }    
