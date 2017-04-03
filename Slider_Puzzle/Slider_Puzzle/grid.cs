@@ -11,7 +11,7 @@ namespace Slider_Puzzle
     public class grid : ContentPage
     {
         private Dictionary<GridPosition, GridItem> _gridItems;
-        private string solved;
+        private Dictionary<GridPosition, GridItem> _solved;
         private AbsoluteLayout _absoluteLayout;
         public grid()
         {
@@ -23,7 +23,8 @@ namespace Slider_Puzzle
                 HorizontalOptions = LayoutOptions.Center,
                 VerticalOptions = LayoutOptions.Center
             };
-            int counter = 1;
+            int counter = 0;
+            
             string source = "";
             for (int row = 0; row < 4; row++)
             {
@@ -42,7 +43,7 @@ namespace Slider_Puzzle
                     _absoluteLayout.Children.Add(item, rect);
                 }
             }
-            solved = _gridItems.ToString();
+            _solved = _gridItems;
                           
             ContentView contentView = new ContentView
             {
@@ -151,7 +152,8 @@ namespace Slider_Puzzle
                 {
                     GridItem item = _gridItems[new GridPosition(row, col)];
                     Rectangle rect = new Rectangle(col * squareSize, row * squareSize, squareSize, squareSize);
-                    AbsoluteLayout.SetLayoutBounds(item, rect); 
+                    AbsoluteLayout.SetLayoutBounds(item, rect);
+                    contentView.Content = _absoluteLayout;
                 }
             }
         }
@@ -224,19 +226,14 @@ namespace Slider_Puzzle
             _gridItems[item1.Position] = item1;
             _gridItems[item2.Position] = item2;
 
-            //if (solved == _gridItems.ToString())
-            //{
-            //    winner item = new winner(new GridPosition(3, 3));
-            //    Rectangle rect = new Rectangle(300, 300, 75, 75);
-            //    _absoluteLayout.Children.Add(item, rect);
-            //    ContentView contentView = new ContentView
-            //    {
-            //        Content = _absoluteLayout
-            //    };
-            //    contentView.SizeChanged += OnContentViewSizeChanged;
-            //    this.Padding = new Thickness(5, Device.OnPlatform(25, 5, 5), 5, 5);
-            //    this.Content = contentView;
-            //}
+            if (_solved == _gridItems)
+            {
+                GridItem item = new GridItem(new GridPosition(3, 3), "17.jpeg");
+                Rectangle rect = new Rectangle(3 * 75, 3 * 75, 75, 75);
+                _absoluteLayout.Children.Add(item, rect);
+
+            }
+            
         }
         class GridPosition
         {
