@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection.Emit;
 using System.Text;
@@ -13,10 +14,12 @@ namespace Slider_Puzzle
         private Dictionary<GridPosition, GridItem> _gridItems;
         private Dictionary<GridPosition, GridItem> _solved;
         private AbsoluteLayout _absoluteLayout;
+        private bool scrambling = true;
         public grid()
         {
             int squareSize = 75;
             _gridItems = new Dictionary<GridPosition, GridItem>();
+            _solved = new Dictionary<GridPosition, GridItem>();
             _absoluteLayout = new AbsoluteLayout
             {
                 BackgroundColor = Color.FromRgb(0, 0, 255),
@@ -39,11 +42,11 @@ namespace Slider_Puzzle
                     item.GestureRecognizers.Add(tapRecognizer);
 
                     _gridItems.Add(item.Position, item);
+                    _solved.Add(item.Position, item);
                     Rectangle rect = new Rectangle(col * squareSize, row * squareSize, squareSize, squareSize);
                     _absoluteLayout.Children.Add(item, rect);
                 }
             }
-            _solved = _gridItems;
                           
             ContentView contentView = new ContentView
             {
@@ -139,6 +142,10 @@ namespace Slider_Puzzle
                     Scrambler(_gridItems[new GridPosition(emptySquare.Row, emptySquare.Column - 1)]);
                     emptySquare.Column = emptySquare.Column - 1;
                 }
+                if (i == 99999)
+                {
+                    scrambling = false;
+                }
             }
         }
         void OnContentViewSizeChanged(object sender, EventArgs args)
@@ -159,7 +166,7 @@ namespace Slider_Puzzle
         }
         void OnLabelTapped(object sender, EventArgs args)
         {
-            Scrambler((GridItem)sender);            
+            Scrambler((GridItem)sender);
         }
 
         void Scrambler(GridItem item)
@@ -173,7 +180,7 @@ namespace Slider_Puzzle
             {
                 GridPosition adjacentSquare = new GridPosition(row - 1, col);
 
-                if (_gridItems[adjacentSquare].Text == "17.jpeg")
+                if (_gridItems[adjacentSquare].Text == "16.jpeg")
                 {
                     correctSquare = adjacentSquare;
                     swapable = true;
@@ -183,7 +190,7 @@ namespace Slider_Puzzle
             {
                 GridPosition adjacentSquare = new GridPosition(row + 1, col);
 
-                if (_gridItems[adjacentSquare].Text == "17.jpeg")
+                if (_gridItems[adjacentSquare].Text == "16.jpeg")
                 {
                     correctSquare = adjacentSquare;
                     swapable = true;
@@ -193,7 +200,7 @@ namespace Slider_Puzzle
             {
                 GridPosition adjacentSquare = new GridPosition(row, col - 1);
 
-                if (_gridItems[adjacentSquare].Text == "17.jpeg")
+                if (_gridItems[adjacentSquare].Text == "16.jpeg")
                 {
                     correctSquare = adjacentSquare;
                     swapable = true;
@@ -203,7 +210,7 @@ namespace Slider_Puzzle
             {
                 GridPosition adjacentSquare = new GridPosition(row, col + 1);
 
-                if (_gridItems[adjacentSquare].Text == "17.jpeg")
+                if (_gridItems[adjacentSquare].Text == "16.jpeg")
                 {
                     correctSquare = adjacentSquare;
                     swapable = true;
@@ -212,6 +219,7 @@ namespace Slider_Puzzle
             if (swapable == true)
             {
                 Swap(item, _gridItems[correctSquare]);
+                
             }
                       
             OnContentViewSizeChanged(this.Content, null);
@@ -225,15 +233,7 @@ namespace Slider_Puzzle
 
             _gridItems[item1.Position] = item1;
             _gridItems[item2.Position] = item2;
-
-            if (_solved == _gridItems)
-            {
-                GridItem item = new GridItem(new GridPosition(3, 3), "17.jpeg");
-                Rectangle rect = new Rectangle(3 * 75, 3 * 75, 75, 75);
-                _absoluteLayout.Children.Add(item, rect);
-
-            }
-            
+            checkForSolved();                  
         }
         class GridPosition
         {
@@ -269,7 +269,8 @@ namespace Slider_Puzzle
         {
             public GridPosition Position
             {
-                get; set;
+                get; 
+                set;
             }
             public String Text
             {
@@ -281,6 +282,7 @@ namespace Slider_Puzzle
                 Source = text;
                 Text = text;
             }
+               
         }
 
         class winner : Label
@@ -294,6 +296,39 @@ namespace Slider_Puzzle
                 Position = position;
                 Text = "Winner";
                 TextColor = Color.White;
+            }
+        }
+
+        public void checkForSolved()
+        {
+            if (scrambling == false)
+            {
+                bool solved = true;
+                for (int row2 = 0; row2 < 4; row2++)
+                {
+                    for (int col2 = 0; col2 < 4; col2++)
+                    {
+                        GridPosition checker = new GridPosition(row2, col2);
+                        if (_solved[checker].Text != _gridItems[checker].Text)
+                        {
+                            solved = false;
+                        }
+                    }
+                }
+                if (solved)
+                {
+                    for (int i = 0; i < _absoluteLayout.Children.Count; i++)
+                    {
+                        _absoluteLayout.Children.RemoveAt(i);
+                    }
+                    Image image = new Image { Source = "solved.jpg" };
+                    _absoluteLayout.Children.Add(image);
+                    _absoluteLayout.HeightRequest = image.Height;
+                    ContentView contentView = new ContentView { Content = _absoluteLayout};
+                    contentView.HeightRequest = _absoluteLayout.Height;
+                    contentView.VerticalOptions = LayoutOptions.Center;
+                    this.Content = contentView;                                                        
+                }
             }
         }
     }    
